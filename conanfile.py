@@ -20,10 +20,6 @@ class BisonConan(ConanFile):
     def source(self):
         tools.get("https://ftp.gnu.org/gnu/bison/bison-%s.tar.gz" % self.version)
 
-    def configure(self):
-        if self.settings.os == "Windows":
-            raise Exception("Windows is not supported yet.")
-
     def build(self):
         env_build = AutoToolsBuildEnvironment(self)
         with tools.environment_append(env_build.vars):
