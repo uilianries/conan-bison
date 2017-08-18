@@ -20,11 +20,9 @@ class BisonConan(ConanFile):
     def source(self):
         tools.get("https://ftp.gnu.org/gnu/bison/bison-%s.tar.gz" % self.version)
 
-    def _run(self, command):
+    def configure(self):
         if self.settings.os == "Windows":
-            tools.run_in_windows_bash(self, tools.unix_path(command))
-        else:
-            self.run(command)
+            raise Exception("Bison is now supported on Windows.")
 
     def build(self):
         env_build = AutoToolsBuildEnvironment(self)
@@ -32,9 +30,9 @@ class BisonConan(ConanFile):
             configure_args = ['--prefix=%s' % self.install_dir]
             configure_args.append('--enable-yacc' if self.options.enable_yacc else '--disable-yacc')
             with tools.chdir(self.release_name):
-                self._run("./configure %s" % ' '.join(configure_args))
-                self._run("make all")
-                self._run("make install")
+                env_build.configure(args=configure_args)
+                env_build.make(args=["all"])
+                env_build.make(args=["install"])
 
     def package(self):
         self.copy(pattern="COPYING", dst=".", src=self.release_name)
