@@ -22,7 +22,7 @@ class BisonConan(ConanFile):
 
     def configure(self):
         if self.settings.os == "Windows":
-            raise Exception("Bison is now supported on Windows.")
+            raise Exception("Bison is not supported on Windows.")
 
     def build(self):
         env_build = AutoToolsBuildEnvironment(self)
