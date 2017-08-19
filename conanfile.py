@@ -1,5 +1,5 @@
 from tempfile import mkdtemp
-from os import path, symlink
+from os import path
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 
