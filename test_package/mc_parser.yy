@@ -1,76 +1,42 @@
-%skeleton "lalr1.cc"
-%require  "3.0"
-%debug 
-%defines 
-%define api.namespace {MC}
-%define parser_class_name {MC_Parser}
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib> //-- I need this for atoi
+using namespace std;
 
-%code requires{
-   namespace MC {
-      class MC_Driver;
-      class MC_Scanner;
-   }
+int yylex();
+int yyerror(const char *p) { cerr << "Error!" << endl; }
+%}
 
-// The following definitions is missing when %locations isn't used
-# ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
-#  else
-#   define YY_NULLPTR 0
-#  endif
-# endif
-
-}
-
-%parse-param { MC_Scanner  &scanner  }
-%parse-param { MC_Driver  &driver  }
-
-%code{
-   #include <iostream>
-   #include <cstdlib>
-   #include <fstream>
-   
-   /* include for all driver functions */
-   #include "mc_driver.hpp"
-
-#undef yylex
-#define yylex scanner.yylex
-}
-
-%define api.value.type variant
-%define parse.assert
-
-%token               END    0     "end of file"
-%token               UPPER
-%token               LOWER
-%token <std::string> WORD
-%token               NEWLINE
-%token               CHAR
-
-%locations
+%union {
+  int val;
+  char sym;
+};
+%token <val> NUM
+%token <sym> OPA OPM LP RP STOP
+%type  <val> exp term sfactor factor res
 
 %%
+run: res run | res    /* forces bison to process many stmts */
 
-list_option : END | list END;
+res: exp STOP         { cout << $1 << endl; }
 
-list
-  : item
-  | list item
-  ;
+exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
+| term                { $$ = $1; }
 
-item
-  : UPPER   { driver.add_upper(); }
-  | LOWER   { driver.add_lower(); }
-  | WORD    { driver.add_word( $1 ); }
-  | NEWLINE { driver.add_newline(); }
-  | CHAR    { driver.add_char(); }
-  ;
+term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
+| sfactor             { $$ = $1; }
+
+sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
+| factor              { $$ = $1; }
+
+factor: NUM           { $$ = $1; }
+| LP exp RP           { $$ = $2; }
 
 %%
-
-
-void 
-MC::MC_Parser::error( const location_type &l, const std::string &err_message )
+int main()
 {
-   std::cerr << "Error: " << err_message << " at " << l << "\n";
+  yyparse();
+  return 0;
 }

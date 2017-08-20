@@ -33,10 +33,10 @@ class BisonConan(ConanFile):
     def package(self):
         self.copy(pattern="COPYING", dst=".", src=self.release_name)
         self.copy(pattern="bison", dst="bin", src=path.join(self.install_dir, "bin"))
-        self.copy(pattern="*.m4", dst="m4sugar", src=path.join(self.install_dir, "share", "bison", "m4sugar"))
+        self.copy(pattern="*", dst="bison", src=path.join(self.install_dir, "share", "bison"))
         self.copy(pattern="*", dst="lib", src=path.join(self.install_dir, "lib"))
 
     def package_info(self):
         self.cpp_info.libs = self.collect_libs()
         self.env_info.path.append(path.join(self.package_folder, "bin"))
-        self.env_info.BISON_PKGDATADIR = self.package_folder
+        self.env_info.BISON_PKGDATADIR = path.join(self.package_folder, "bison")
