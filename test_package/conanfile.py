@@ -10,4 +10,4 @@ class BisonTestConan(ConanFile):
 
     def test(self):
         check_call(["bison", "--version"])
-        check_call(["bison", "-y", os.path.join(self.conanfile_directory, "mc_parser.yy")])
+        check_call(["bison", "-d", os.path.join(self.conanfile_directory, "mc_parser.yy")])
