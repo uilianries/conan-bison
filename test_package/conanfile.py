@@ -4,8 +4,8 @@ from subprocess import check_call
 
 class BisonTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    user = os.getenv("CONAN_USERNAME", "conan")
-    channel = os.getenv("CONAN_CHANNEL", "stable")
+    user = os.getenv("CONAN_USERNAME", "uilianries")
+    channel = os.getenv("CONAN_CHANNEL", "testing")
     requires = "bison/3.0.4@%s/%s" % (user, channel)
 
     def imports(self):
